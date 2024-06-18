@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 
 class PlaybackModel extends ChangeNotifier {
   bool _isPlaying = false;
-  int _bpm = 0;
+  int _bpm = 120;
   int _countmusicdata = 0;
+  int _steps = 0;
+  int _amoutFlowers = 0;
+  int _nextFlowers = 0;
 
   bool get isPlaying => _isPlaying;
   int get bpm => _bpm;
   int get countmusicdata => _countmusicdata;
+  int get steps => _steps;
+  int get amoutFlowers => _amoutFlowers;
+  int get nextFlowers => _nextFlowers;
 
   void togglePlayPause() {
     _isPlaying = !_isPlaying;
@@ -21,6 +27,27 @@ class PlaybackModel extends ChangeNotifier {
 
   void setcountmusicdata(int countmusicdata) {
     _countmusicdata = countmusicdata;
+    notifyListeners();
+  }
+
+  void setSteps(int steps) {
+    _steps = steps;
+    notifyListeners();
+  }
+
+  void setAmoutFlowers(int amoutFlowers) {
+    _amoutFlowers = amoutFlowers;
+    notifyListeners();
+  }
+
+  void setNextFlowers(int nextFlowers) {
+    if (nextFlowers == 5) {
+      _amoutFlowers = amoutFlowers + 1;
+    }
+    nextFlowers = nextFlowers % 5;
+    nextFlowers = nextFlowers + 1;
+    _nextFlowers = nextFlowers;
+
     notifyListeners();
   }
 }
