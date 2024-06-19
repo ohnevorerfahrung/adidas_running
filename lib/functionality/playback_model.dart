@@ -5,6 +5,7 @@ class PlaybackModel extends ChangeNotifier {
   int _bpm = 120;
   int _countmusicdata = 0;
   int _steps = 0;
+  int _stepFrequence = 0;
   int _amoutFlowers = 0;
   int _nextFlowers = 0;
 
@@ -12,6 +13,7 @@ class PlaybackModel extends ChangeNotifier {
   int get bpm => _bpm;
   int get countmusicdata => _countmusicdata;
   int get steps => _steps;
+  int get stepFrequence => _stepFrequence;
   int get amoutFlowers => _amoutFlowers;
   int get nextFlowers => _nextFlowers;
 
@@ -32,6 +34,11 @@ class PlaybackModel extends ChangeNotifier {
 
   void setSteps(int steps) {
     _steps = steps;
+    notifyListeners();
+  }
+
+  void setStepFrequence(int stepFrequence) {
+    _stepFrequence = stepFrequence;
     notifyListeners();
   }
 

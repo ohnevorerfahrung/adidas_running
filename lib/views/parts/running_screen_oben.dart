@@ -13,6 +13,7 @@ class Oben extends StatefulWidget {
 
 class _ObenState extends State<Oben> {
   int count = 0;
+  var dateLastUpdate = DateTime.now();
   int stepsLastTime = 50;
   Timer? _timer;
 
@@ -41,13 +42,77 @@ class _ObenState extends State<Oben> {
       return;
     } else {
       var now = DateTime.now();
-      var midnight = DateTime(now.year, now.month, now.day);
-      int? steps = await Health().getTotalStepsInInterval(midnight, now);
+      dateLastUpdate = DateTime(
+          dateLastUpdate.year, dateLastUpdate.month, dateLastUpdate.day);
+      int? steps = await Health().getTotalStepsInInterval(dateLastUpdate, now);
       stepsLastTime = steps ?? 0;
-      print(stepsLastTime);
+      dateLastUpdate = DateTime(
+          dateLastUpdate.year, dateLastUpdate.month, dateLastUpdate.day);
     }
   }
 
+  // /*
+  void _startStepCounter() {
+    int bpm = Provider.of<PlaybackModel>(context, listen: false).bpm;
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) async {
+      var now = DateTime.now();
+      print("last update: $dateLastUpdate");
+      print("now: $now");
+      try {
+        await Health().getTotalStepsInInterval(dateLastUpdate, now);
+      } catch (e) {
+        bool isPlaying =
+            Provider.of<PlaybackModel>(context, listen: false).isPlaying;
+        int stepFrequence =
+            Provider.of<PlaybackModel>(context, listen: false).stepFrequence;
+        if (isPlaying == true) {
+          if (stepFrequence + 10 > bpm && stepFrequence - 10 < bpm) {
+            Provider.of<PlaybackModel>(context, listen: false)
+                .setNextFlowers(count);
+            count++;
+          }
+        }
+      }
+      int? steps = await Health().getTotalStepsInInterval(dateLastUpdate, now);
+      int sec = now.difference(dateLastUpdate).inSeconds;
+      if (steps != null && steps != 0) {
+        print("Steps: $steps");
+        print("Seconds: $sec");
+        if (sec > 180) {
+          Provider.of<PlaybackModel>(context, listen: false)
+              .setStepFrequence(bpm);
+          print("new bpm is set");
+        } else if (sec != 0) {
+          Provider.of<PlaybackModel>(context, listen: false)
+              .setStepFrequence(steps * 60 ~/ sec);
+        } else {
+          Provider.of<PlaybackModel>(context, listen: false)
+              .setStepFrequence(bpm);
+        }
+        dateLastUpdate = now;
+      } else {
+        if (sec > 120 && sec < 180) {
+          Provider.of<PlaybackModel>(context, listen: false)
+              .setStepFrequence(0);
+          dateLastUpdate = now;
+        }
+      }
+      bool isPlaying =
+          Provider.of<PlaybackModel>(context, listen: false).isPlaying;
+      int stepFrequence =
+          Provider.of<PlaybackModel>(context, listen: false).stepFrequence;
+      if (isPlaying == true) {
+        if (stepFrequence + 10 > bpm && stepFrequence - 10 < bpm) {
+          Provider.of<PlaybackModel>(context, listen: false)
+              .setNextFlowers(count);
+          count++;
+        }
+      }
+    });
+  }
+  //*/
+
+  /*
   void _startStepCounter() {
     _timer = Timer.periodic(const Duration(seconds: 30), (timer) async {
       var now = DateTime.now();
@@ -72,12 +137,9 @@ class _ObenState extends State<Oben> {
         }
       }
       stepsLastTime = steps;
-      //int? steps = await Health().getTotalStepsInInterval(midnight, now);
-      //if (steps != null) {
-      //  Provider.of<PlaybackModel>(context, listen: false).setSteps(steps);
-      //}
     });
   }
+  */
 
   @override
   void dispose() {
@@ -92,7 +154,7 @@ class _ObenState extends State<Oben> {
         const Expanded(flex: 2, child: SizedBox()),
         ClipOval(
           child: Image.asset(
-            'assets/images/my_image.png', // Make sure you put your image in the assets directory and mention it in pubspec.yaml
+            'assets/images/my_image.png',
             width: 300,
             height: 300,
             fit: BoxFit.cover,
@@ -143,7 +205,8 @@ class _ObenState extends State<Oben> {
         Consumer<PlaybackModel>(
           builder: (context, playbackModel, child) {
             return Text(
-              'Steps: ${playbackModel.steps}',
+              'Step frequence: ${playbackModel.stepFrequence}',
+              //'Steps: ${playbackModel.steps}',
               style: const TextStyle(fontSize: 20),
             );
           },
