@@ -49,5 +49,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs access to the microphone to play audio.</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This app needs access to your media library to play audio.</string>
 </dict>
 </plist>
