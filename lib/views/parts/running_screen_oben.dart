@@ -51,9 +51,7 @@ class _ObenState extends State<Oben> {
     }
   }
 
-  // /*
   void _startStepCounter() {
-    int bpm = Provider.of<PlaybackModel>(context, listen: false).bpm;
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) async {
       var now = DateTime.now();
       print("last update: $dateLastUpdate");
@@ -61,21 +59,13 @@ class _ObenState extends State<Oben> {
       try {
         await Health().getTotalStepsInInterval(dateLastUpdate, now);
       } catch (e) {
-        bool isPlaying =
-            Provider.of<PlaybackModel>(context, listen: false).isPlaying;
-        int stepFrequence =
-            Provider.of<PlaybackModel>(context, listen: false).stepFrequence;
-        if (isPlaying == true) {
-          if (stepFrequence + 10 > bpm && stepFrequence - 10 < bpm) {
-            Provider.of<PlaybackModel>(context, listen: false)
-                .setNextFlowers(count);
-            count++;
-          }
-        }
+        print(e);
       }
       int? steps = await Health().getTotalStepsInInterval(dateLastUpdate, now);
       int sec = now.difference(dateLastUpdate).inSeconds;
+      print("$sec");
       if (steps != null && steps != 0) {
+        int bpm = Provider.of<PlaybackModel>(context, listen: false).bpm;
         print("Steps: $steps");
         print("Seconds: $sec");
         if (sec > 180) {
@@ -101,7 +91,11 @@ class _ObenState extends State<Oben> {
           Provider.of<PlaybackModel>(context, listen: false).isPlaying;
       int stepFrequence =
           Provider.of<PlaybackModel>(context, listen: false).stepFrequence;
+      int bpm = Provider.of<PlaybackModel>(context, listen: false).bpm;
+      print(isPlaying);
       if (isPlaying == true) {
+        print("bpm is $bpm");
+        print("steps is $stepFrequence");
         if (stepFrequence + 10 > bpm && stepFrequence - 10 < bpm) {
           Provider.of<PlaybackModel>(context, listen: false)
               .setNextFlowers(count);
@@ -110,36 +104,6 @@ class _ObenState extends State<Oben> {
       }
     });
   }
-  //*/
-
-  /*
-  void _startStepCounter() {
-    _timer = Timer.periodic(const Duration(seconds: 30), (timer) async {
-      var now = DateTime.now();
-      var midnight = DateTime(now.year, now.month, now.day);
-      int? steps = await Health().getTotalStepsInInterval(midnight, now);
-      if (steps != null) {
-        Provider.of<PlaybackModel>(context, listen: false)
-            .setSteps(steps - stepsLastTime);
-      } else {
-        steps = 0;
-        steps = steps + 60;
-      }
-      bool isPlaying =
-          Provider.of<PlaybackModel>(context, listen: false).isPlaying;
-      int bpm = Provider.of<PlaybackModel>(context, listen: false).bpm;
-      if (isPlaying == true) {
-        if (steps - stepsLastTime > bpm / 60 * 30 - 10 &&
-            steps - stepsLastTime < bpm / 60 * 30 + 10) {
-          Provider.of<PlaybackModel>(context, listen: false)
-              .setNextFlowers(count);
-          count++;
-        }
-      }
-      stepsLastTime = steps;
-    });
-  }
-  */
 
   @override
   void dispose() {
@@ -151,6 +115,33 @@ class _ObenState extends State<Oben> {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            const Expanded(child: SizedBox()),
+            Center(
+              child: Consumer<PlaybackModel>(
+                builder: (context, playbackModel, child) {
+                  return Text(
+                    '${playbackModel.amoutFlowers}',
+                    style: const TextStyle(fontSize: 24),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 0, 16, 0),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/rose_colorful.png',
+                  width: 40,
+                  height: 40,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ],
+        ),
         const Expanded(flex: 2, child: SizedBox()),
         ClipOval(
           child: Image.asset(
@@ -185,7 +176,7 @@ class _ObenState extends State<Oben> {
                       ClipRect(
                         child: Align(
                           alignment: Alignment.bottomCenter,
-                          heightFactor: playbackModel.nextFlowers / 5,
+                          heightFactor: playbackModel.nextFlowers / 30,
                           child: Image.asset(
                             'assets/images/rose_colorful.png',
                             width: 80,
@@ -198,16 +189,6 @@ class _ObenState extends State<Oben> {
                   ),
                 ],
               ),
-            );
-          },
-        ),
-        const Expanded(flex: 2, child: SizedBox()),
-        Consumer<PlaybackModel>(
-          builder: (context, playbackModel, child) {
-            return Text(
-              'Step frequence: ${playbackModel.stepFrequence}',
-              //'Steps: ${playbackModel.steps}',
-              style: const TextStyle(fontSize: 20),
             );
           },
         ),

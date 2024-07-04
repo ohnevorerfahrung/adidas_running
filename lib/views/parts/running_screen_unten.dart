@@ -14,17 +14,22 @@ class _UntenState extends State<Unten> {
   late AudioPlayer _audioPlayer;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
+  PlaybackModel playbackModel = PlaybackModel();
+
+  final List<Map<String, dynamic>> bpmChanges = [
+    {'time': const Duration(minutes: 0, seconds: 10), 'bpm': 130},
+    {'time': const Duration(minutes: 0, seconds: 20), 'bpm': 140},
+    // Add more time-points and BPM values as needed
+  ];
 
   @override
   void initState() {
     super.initState();
     _audioPlayer = AudioPlayer();
-
     // Listen to audio duration changes
     _audioPlayer.onDurationChanged.listen((d) {
       setState(() {
         _duration = d;
-        print("Audio duration: $_duration");
       });
     });
 
@@ -32,8 +37,8 @@ class _UntenState extends State<Unten> {
     _audioPlayer.onPositionChanged.listen((p) {
       setState(() {
         _position = p;
-        print("Audio position: $_position");
       });
+      checkBpmChange(p);
     });
 
     // Listen to completion of audio playback
@@ -49,6 +54,21 @@ class _UntenState extends State<Unten> {
   void dispose() {
     _audioPlayer.dispose();
     super.dispose();
+  }
+
+  void checkBpmChange(Duration position) {
+    for (var bpmChange in bpmChanges) {
+      if (position >= bpmChange['time'] &&
+          position < bpmChange['time'] + const Duration(seconds: 1)) {
+        if (Provider.of<PlaybackModel>(context, listen: false).bpm !=
+            bpmChange['bpm']) {
+          context.read<PlaybackModel>().setBpm(bpmChange['bpm']);
+          context.read<PlaybackModel>().setStepFrequence(bpmChange['bpm']);
+          print("BPM changed to: ${bpmChange['bpm']}");
+        }
+        break;
+      }
+    }
   }
 
   String formatTime(Duration duration) {
@@ -73,11 +93,11 @@ class _UntenState extends State<Unten> {
             builder: (context, playbackModel, child) {
               return ElevatedButton(
                 onPressed: () async {
-                  playbackModel.setBpm(playbackModel.bpm + 1);
                   playbackModel.togglePlayPause();
-                  playbackModel.setcountmusicdata(playbackModel.countmusicdata + 1);
                   if (playbackModel.isPlaying) {
-                    await _audioPlayer.setSource(AssetSource('assets/audio/vintage-rock-drums-120-bpm.mp3'));
+                    await _audioPlayer.setSource(
+                        //AssetSource('audio/vintage-rock-drums-120-bpm.mp3'));
+                        AssetSource('audio/Storyline.mp3'));
                     await _audioPlayer.resume();
                     print("Audio is playing");
                   } else {
@@ -86,7 +106,8 @@ class _UntenState extends State<Unten> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                 ),
                 child: Icon(
                   playbackModel.isPlaying ? Icons.pause : Icons.play_arrow,

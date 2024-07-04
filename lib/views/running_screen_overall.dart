@@ -14,20 +14,28 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => PlaybackModel(),
-      child: const Scaffold(
-        body: Column(
-          children: <Widget>[
-            Expanded(
-              flex: 4,
-              child: Oben(),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Container(
+          color: Colors.white,
+          child: ChangeNotifierProvider(
+            create: (context) => PlaybackModel(),
+            child: const Scaffold(
+              body: Column(
+                children: <Widget>[
+                  Expanded(
+                    flex: 4,
+                    child: Oben(),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Unten(),
+                  ),
+                ],
+              ),
             ),
-            Expanded(
-              flex: 2,
-              child: Unten(),
-            ),
-          ],
+          ),
         ),
       ),
     );

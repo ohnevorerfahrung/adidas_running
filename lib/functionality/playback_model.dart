@@ -23,6 +23,7 @@ class PlaybackModel extends ChangeNotifier {
   }
 
   void setBpm(int bpm) {
+    print("Got changed bpm: $bpm");
     _bpm = bpm;
     notifyListeners();
   }
@@ -48,13 +49,12 @@ class PlaybackModel extends ChangeNotifier {
   }
 
   void setNextFlowers(int nextFlowers) {
-    if (nextFlowers == 5) {
+    if (nextFlowers == 30) {
       _amoutFlowers = amoutFlowers + 1;
     }
-    nextFlowers = nextFlowers % 5;
+    nextFlowers = nextFlowers % 30;
     nextFlowers = nextFlowers + 1;
     _nextFlowers = nextFlowers;
-
     notifyListeners();
   }
 }
