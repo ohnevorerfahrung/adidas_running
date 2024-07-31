@@ -17,9 +17,12 @@ class _UntenState extends State<Unten> {
   PlaybackModel playbackModel = PlaybackModel();
 
   final List<Map<String, dynamic>> bpmChanges = [
-    {'time': const Duration(minutes: 0, seconds: 10), 'bpm': 130},
-    {'time': const Duration(minutes: 0, seconds: 20), 'bpm': 140},
-    // Add more time-points and BPM values as needed
+    {'time': const Duration(minutes: 0, seconds: 1), 'bpm': 142},
+    {'time': const Duration(minutes: 2, seconds: 32), 'bpm': 146},
+    {'time': const Duration(minutes: 7, seconds: 32), 'bpm': 142},
+    {'time': const Duration(minutes: 9, seconds: 32), 'bpm': 160},
+    {'time': const Duration(minutes: 14, seconds: 32), 'bpm': 142},
+    {'time': const Duration(minutes: 16, seconds: 32), 'bpm': 146},
   ];
 
   @override

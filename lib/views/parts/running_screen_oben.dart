@@ -20,11 +20,11 @@ class _ObenState extends State<Oben> {
   @override
   void initState() {
     super.initState();
-    _initializeHealth();
+    _initializeHealth(true);
     _startStepCounter();
   }
 
-  Future<void> _initializeHealth() async {
+  Future<void> _initializeHealth(bool beginning) async {
     // Configure the health plugin before use
     Health().configure(useHealthConnectIfAvailable: true);
 
@@ -32,22 +32,24 @@ class _ObenState extends State<Oben> {
     var types = [
       HealthDataType.STEPS,
     ];
+    if (beginning == true) {
+      // Requesting access to the data types before reading them
+      bool requested = await Health().requestAuthorization(types);
 
-    // Requesting access to the data types before reading them
-    bool requested = await Health().requestAuthorization(types);
-
-    // Handle the request result here
-    if (!requested) {
-      //print('Authorization not granted');
-      return;
-    } else {
-      var now = DateTime.now();
-      dateLastUpdate = DateTime(
-          dateLastUpdate.year, dateLastUpdate.month, dateLastUpdate.day);
-      int? steps = await Health().getTotalStepsInInterval(dateLastUpdate, now);
-      stepsLastTime = steps ?? 0;
-      dateLastUpdate = DateTime(
-          dateLastUpdate.year, dateLastUpdate.month, dateLastUpdate.day);
+      // Handle the request result here
+      if (!requested) {
+        //print('Authorization not granted');
+        return;
+      } else {
+        var now = DateTime.now();
+        dateLastUpdate = DateTime(
+            dateLastUpdate.year, dateLastUpdate.month, dateLastUpdate.day);
+        int? steps =
+            await Health().getTotalStepsInInterval(dateLastUpdate, now);
+        stepsLastTime = steps ?? 0;
+        dateLastUpdate = DateTime(
+            dateLastUpdate.year, dateLastUpdate.month, dateLastUpdate.day);
+      }
     }
   }
 
@@ -57,6 +59,7 @@ class _ObenState extends State<Oben> {
       print("last update: $dateLastUpdate");
       print("now: $now");
       try {
+        _initializeHealth(false);
         await Health().getTotalStepsInInterval(dateLastUpdate, now);
       } catch (e) {
         print(e);
@@ -176,7 +179,7 @@ class _ObenState extends State<Oben> {
                       ClipRect(
                         child: Align(
                           alignment: Alignment.bottomCenter,
-                          heightFactor: playbackModel.nextFlowers / 30,
+                          heightFactor: playbackModel.nextFlowers / 15,
                           child: Image.asset(
                             'assets/images/rose_colorful.png',
                             width: 80,
@@ -192,6 +195,12 @@ class _ObenState extends State<Oben> {
             );
           },
         ),
+        //Consumer<PlaybackModel>(builder: (context, playbackModel, child) {
+        //  return Text(
+        //    '${playbackModel.stepFrequence}',
+        //    style: const TextStyle(fontSize: 24),
+        //  );
+        //})
       ],
     );
   }

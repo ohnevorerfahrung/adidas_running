@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class PlaybackModel extends ChangeNotifier {
   bool _isPlaying = false;
-  int _bpm = 120;
+  int _bpm = 142;
   int _countmusicdata = 0;
   int _steps = 0;
   int _stepFrequence = 0;
@@ -49,10 +49,10 @@ class PlaybackModel extends ChangeNotifier {
   }
 
   void setNextFlowers(int nextFlowers) {
-    if (nextFlowers == 30) {
+    if (nextFlowers == 15) {
       _amoutFlowers = amoutFlowers + 1;
     }
-    nextFlowers = nextFlowers % 30;
+    nextFlowers = nextFlowers % 15;
     nextFlowers = nextFlowers + 1;
     _nextFlowers = nextFlowers;
     notifyListeners();
